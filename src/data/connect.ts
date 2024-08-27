@@ -12,14 +12,6 @@ const options: ConnectionOptions = {
   host: process.env.HOST,
 };
 
-const ConnectDB = async () => await mysql.createConnection(options);
+const DB = mysql.createConnection(options);
 
-async function Insert() {
-  try {
-    const [res, files] = await ConnectDB().query("");
-    console.log(res);
-    console.log(files);
-  } catch (err) {}
-}
-
-export { options };
+export { options, DB };
