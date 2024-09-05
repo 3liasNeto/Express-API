@@ -22,7 +22,7 @@ route.get("/", (req, res) => {
   res.json(seed.book);
 });
 
-route.get("/books", (req, res) => paginatedBook.getData(req, res));
+// route.get("/books", (req, res) => paginatedBook.getData(req, res));
 route.post("/add-book", (req, res) => paginatedBook.createData(req, res));
 route.put("/update-book", (req, res) => paginatedBook.updateData(req, res));
 route.delete("/delete-book", (req, res) => paginatedBook.deleteData(req, res));

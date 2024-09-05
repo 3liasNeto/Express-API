@@ -1,15 +1,16 @@
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import process from "process";
 import dotenv from "dotenv";
+import { OrmConnection } from "./database.orm";
 
 dotenv.config();
 
-const options: ConnectionOptions = {
-  database: process.env.DB,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
+const options: OrmConnection = {
+  database: process.env.DB ?? "",
+  user: process.env.USER ?? "",
+  password: process.env.PASSWORD ?? "",
   port: 3306,
-  host: process.env.HOST,
+  host: process.env.HOST ?? "",
 };
 
 const DB = mysql.createConnection(options);

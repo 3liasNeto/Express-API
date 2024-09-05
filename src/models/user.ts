@@ -2,8 +2,8 @@ import mysql, { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { Request, Response } from "express";
 
 export interface UserModel {
-  id: number;
   name: string;
+  id: number;
   lastName: string;
   email: string;
   password: string;

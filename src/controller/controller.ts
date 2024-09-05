@@ -21,20 +21,20 @@ class PaginatedController<PCData>{
     constructor(paginationService: PaginationService<PCData>) {
         this.paginationService = paginationService;
       }
-    async getData(req: Request, res: Response) {
-        try{
-            const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.pageSize as string) || 15;
+    // async getData(req: Request, res: Response) {
+    //     try{
+    //         const page = parseInt(req.query.page as string) || 1;
+    //         const pageSize = parseInt(req.query.pageSize as string) || 15;
 
 
-            const data = await this.paginationService.fetchPageData(page, pageSize);
-            const paginatedData = new PaginatedData<PCData>({items: data.items, total: data.total,page: page, pageSize: pageSize})
-            // console.log("Pagination: ", paginatedData);
-            return res.status(200).json(paginatedData)
-        }catch(err){
-            res.status(500).json('Error')
-        }
-    }
+    //         const data = await this.paginationService.fetchPageData(page, pageSize);
+    //         const paginatedData = new PaginatedData<PCData>({items: data.items, total: data.total,page: page, pageSize: pageSize})
+    //         // console.log("Pagination: ", paginatedData);
+    //         return res.status(200).json(paginatedData)
+    //     }catch(err){
+    //         res.status(500).json('Error')
+    //     }
+    // }
 
     async createData(req: Request, res: Response){
         try{

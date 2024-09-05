@@ -31,7 +31,7 @@ const queries : CrudQueries = {
     update: "UPDATE Books SET ? WHERE id = ?"
 }
 
-type BookQuery = BookInfo & RowDataPacket
+export type BookQuery = BookInfo & RowDataPacket
 
 class Book implements BookActions {
     DB: Promise<mysql.Connection>;

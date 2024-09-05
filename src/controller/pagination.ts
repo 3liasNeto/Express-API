@@ -1,8 +1,9 @@
+type PageSize = 15 | 30 | 50 | 100;
 interface Pagination<PData> {
     items: PData[];
     total: number;
     page: number;
-    pageSize: number;
+    pageSize: PageSize;
     next: number | null;
     previous: number | null;
 }
@@ -13,7 +14,7 @@ class PaginatedData<PData> implements Pagination<PData> {
     items: PData[];
     total: number;
     page: number = 1;
-    pageSize: number = 15;
+    pageSize: PageSize = 15;
     next: number | null;
     previous: number | null;
 
@@ -30,7 +31,7 @@ class PaginatedData<PData> implements Pagination<PData> {
     private createPagination(pagination: PaginationInput<PData>): Pagination<PData> {
         const totalPages = Math.ceil(pagination.total / pagination.pageSize);
         console.log(pagination.items.length);
-        // console.log("Data :", pagination);
+        
         return {
             total: totalPages,
             page: pagination.page,

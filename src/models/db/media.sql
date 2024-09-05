@@ -32,7 +32,7 @@ icon text
 );
 
 CREATE Table Posts(
-id int not null auto_incremrsent primary key,
+id int not null auto_increment primary key,
 title varchar(266) not null,
 description varchar(600),
 tags varchar(200),
