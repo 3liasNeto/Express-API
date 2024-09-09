@@ -6,21 +6,24 @@ import { seed } from "./data/seed";
 import { Log } from "./middlewares/handler";
 import { BookInfo } from "./models/book";
 
-new App().app.listen(3001, () => {
+new App().app.listen(3000, () => {
   Log.info("Running Server");
 });
 
-orm.read<BookQuery, 'Books'>({
-  model: "Books",
-  conditions: {
-    limit: 10,
-    order: {
-      items: ["id" ],
-      order: "ASC"
-    },
-  },
-  
-}).then((data) => {console.log(data)})
+// orm
+//   .read<BookQuery, "Books">({
+//     model: "Books",
+//     conditions: {
+//       limit: 10,
+//       order: {
+//         items: ["id"],
+//         order: "ASC",
+//       },
+//     },
+//   })
+//   .then((data) => {
+//     console.log(data);
+//   });
 
 // orm.delete({
 //   model: "Books",

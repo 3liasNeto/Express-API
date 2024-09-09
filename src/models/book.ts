@@ -18,6 +18,7 @@ interface BookInfo {
   averageRating: number;
   ratingsCount: number;
   price: number;
+  total: number;
 }
 
 class BookData implements BookInfo {
@@ -33,7 +34,7 @@ class BookData implements BookInfo {
   averageRating: number;
   ratingsCount: number;
   price: number;
-
+  total: number;
   constructor(
     title: string,
     subtitle: string,
@@ -46,6 +47,7 @@ class BookData implements BookInfo {
     averageRating: number,
     ratingsCount: number,
     price: number
+    total: number
   ) {
     this.title = title;
     this.subtitle = subtitle;
@@ -58,6 +60,7 @@ class BookData implements BookInfo {
     this.averageRating = averageRating;
     this.ratingsCount = ratingsCount;
     this.price = price;
+    this.total = total;
   }
 }
 

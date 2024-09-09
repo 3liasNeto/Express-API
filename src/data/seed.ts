@@ -18,7 +18,7 @@ const req = axios.create({
 });
 
 class Seed {
-  book: Omit<BookInfo, "id">[] = [];
+  book: Omit<BookInfo, "id" | "total">[] = [];
   seedBooks: string[] = initialBooks;
   seedFilePath: string = path.resolve(__dirname, "../data/initial-seed.json");
   isSeeded: boolean = false;
@@ -28,8 +28,8 @@ class Seed {
   }
 
   async init() {
-    await this.getBooks(); 
-    await this.verifySeed(); 
+    await this.getBooks();
+    await this.verifySeed();
     await this.seedDB();
     await this.setSeed();
   }
@@ -98,15 +98,13 @@ class Seed {
         await DB
       ).query<DataSeed[]>(
         "SELECT lastSeed FROM Seeds WHERE lastSeed LIKE ? LIMIT 1",
-        [`%${this.book[this.book.length - 1].title}%`]
+        [`%${this.book[this.book.length - 1].title}%`],
       );
       // console.log(seed);
       // console.log(seed.length);
       // console.log(this.isSeeded);
       if (seed.length) {
-
-          this.isSeeded = true
-
+        this.isSeeded = true;
       }
       return seed;
     } catch (err) {
@@ -114,12 +112,12 @@ class Seed {
     }
   }
   async seedDB() {
-    console.info("Is Seeded: ",this.isSeeded);
-    if(this.isSeeded)return;
+    console.info("Is Seeded: ", this.isSeeded);
+    if (this.isSeeded) return;
 
     return await Promise.all(
       this.book.map(async (book) => {
-        const query = `INSERT INTO Books (title, subtitle, authors, categories, publishedDate, description, images, language, averageRating, ratingsCount, price) 
+        const query = `INSERT INTO Books (title, subtitle, authors, categories, publishedDate, description, images, language, averageRating, ratingsCount, price)
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         const values = [
           book.title,
@@ -142,23 +140,22 @@ class Seed {
         } catch (err) {
           console.error("Erro ao executar query:", err);
         }
-      })
+      }),
     );
   }
 
-  async setSeed(){
-    if(this.isSeeded)return;
-    try{
-    const seedQuery = `INSERT INTO Seeds (Seeded, Date, lastSeed) VALUES (?, ? ,?)`;
-    const values = [true, new Date, this.book[this.book.length - 1].title]
-    const [res, fields] = await (await DB).query(seedQuery, values);
-    
-    return res
-  }catch(err){
-    console.error(err)
-  }
-  }
+  async setSeed() {
+    if (this.isSeeded) return;
+    try {
+      const seedQuery = `INSERT INTO Seeds (Seeded, Date, lastSeed) VALUES (?, ? ,?)`;
+      const values = [true, new Date(), this.book[this.book.length - 1].title];
+      const [res, fields] = await (await DB).query(seedQuery, values);
 
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
 export const seed = new Seed();

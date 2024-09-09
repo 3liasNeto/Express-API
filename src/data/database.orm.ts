@@ -6,7 +6,7 @@ import mysql, {
 import { options } from "./connect";
 import { Models } from "../models/models";
 
-type ModelKey = keyof Models;
+export type ModelKey = keyof Models;
 
 export type OrmConnection = {
   database: string;
@@ -20,17 +20,22 @@ type GenericObject<M extends ModelKey> = {
   [key in keyof Models[M]]: any;
 };
 
-interface QueryOptions<M extends ModelKey> {
+export interface QueryOptions<M extends ModelKey> {
   model: M;
   conditions?: ConditionsOptions<M>;
   columns?: (keyof Models[M])[];
 }
 
+export type PaginatedReturn<T> = {
+  items: Omit<T, "total">[];
+  total: number;
+};
+
 type Order = "DESC" | "ASC";
 
 type OrderBy<M extends ModelKey> = {
   order: Order;
-  items: (keyof Models[M])[]
+  items: (keyof Models[M])[];
 };
 
 type ConditionsOptions<M extends ModelKey> = {
@@ -38,6 +43,7 @@ type ConditionsOptions<M extends ModelKey> = {
   order?: OrderBy<M>;
   offset?: number;
   limit?: number;
+  paginated?: boolean;
 };
 
 class Orm {
@@ -51,7 +57,7 @@ class Orm {
   }
 
   private async dbConnection(
-    data: OrmConnection
+    data: OrmConnection,
   ): Promise<[Error | null, Connection | null]> {
     try {
       const conn = await mysql.createConnection(data);
@@ -68,7 +74,7 @@ class Orm {
 
     if (err)
       throw new Error(
-        `Erro ao tentar conectar com banco de dados: ${err.message}`
+        `Erro ao tentar conectar com banco de dados: ${err.message}`,
       );
     console.info("DB Initialized!!");
     return data;
@@ -78,13 +84,13 @@ class Orm {
     let query: string[] = [];
 
     const whereClause = Object.entries(data?.where ?? {}).map(
-      ([key, value]) => `${key} = ${mysql.escape(value)}`
+      ([key, value]) => `${key} = ${mysql.escape(value)}`,
     );
-
 
     if (data.where) query.push(`WHERE ${whereClause[0]}`);
 
-    if (data.order) query.push(`ORDER BY ${data.order.items.join(", ")} ${data.order.order}`);
+    if (data.order)
+      query.push(`ORDER BY ${data.order.items.join(", ")} ${data.order.order}`);
 
     if (data.limit) query.push(`LIMIT ${data.limit}`);
 
@@ -120,7 +126,7 @@ class Orm {
           store.push(`${key} = ${value}`);
         } else if (typeof value === "object" && value !== null) {
           store.push(
-            `${key} = '${JSON.stringify(value).replace(/'/g, "\\'")}'`
+            `${key} = '${JSON.stringify(value).replace(/'/g, "\\'")}'`,
           );
         } else {
           store.push("NULL");
@@ -134,11 +140,12 @@ class Orm {
     columns,
     conditions,
     model,
-  }: QueryOptions<D>) {
+  }: QueryOptions<D>): Promise<T[] | PaginatedReturn<T>> {
     try {
       const queryConditions = conditions
         ? this.filterCondition(conditions)
         : "";
+
       const query = `SELECT ${
         columns && columns.length > 0 ? columns.join(", ") : "*"
       } FROM ${model} ${queryConditions}`;
@@ -149,6 +156,16 @@ class Orm {
         throw new Error("Sem conexão com banco de dados.");
 
       const [res] = await connection.query<T[]>(query);
+      if (conditions?.paginated) {
+        const queryCount = `SELECT COUNT(*) as total FROM ${model}`;
+        const [total] = await connection.query<T[]>(queryCount);
+        console.log(total.find((item) => item.total));
+        const filteredTotal = total[0].total;
+        return {
+          items: res.map(({ total, ...rest }) => ({ ...rest })),
+          total: Number(filteredTotal) ?? 0,
+        };
+      }
 
       return res;
     } catch (err) {
@@ -225,4 +242,6 @@ class Orm {
   }
 }
 
-export const orm = new Orm(options);
+const orm = new Orm(options);
+
+export { orm, type Orm as OrmProps };
