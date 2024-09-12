@@ -1,30 +1,48 @@
 import { Router } from "express";
 import { seed } from "../data/seed";
 import { Book, BookQuery } from "./Books";
-import { DB } from "../data/connect";
 import { PaginatedController } from "./controller";
 import { BookInfo } from "../models/book";
 import { User } from "../models/user";
 import { orm } from "../data/database.orm";
+import {
+  BodyValidator,
+  QueryValidator,
+  Validator,
+} from "../middlewares/validation";
+import {
+  booksQuerySchema,
+  createBookSchema,
+  updateBookSchema,
+} from "../schemas/books";
 
 const route: Router = Router();
 
-const bookService = new Book(DB);
 const paginatedBook = new PaginatedController<BookInfo>(orm);
 
-const user = new User();
-route.get("/", (req, res) => {
-  res.json(seed.book);
-});
-
-route.get("/books", (req, res) =>
+route.get("/books", QueryValidator(booksQuerySchema), (req, res) =>
   paginatedBook.getData<BookQuery, "Books">(req, res, {
     model: "Books",
-  }),
+    conditions: {
+      where: req.query.search ? { title: `%${req.query.search}%` } : {},
+    },
+  })
 );
-// route.post("/add-book", (req, res) => paginatedBook.createData(req, res));
-// route.put("/update-book", (req, res) => paginatedBook.updateData(req, res));
-// route.delete("/delete-book", (req, res) => paginatedBook.deleteData(req, res));
+
+route.post("/add-book", BodyValidator(createBookSchema), (req, res) =>
+  paginatedBook.createData<"Books">(req, res, { model: "Books" })
+);
+
+const query = booksQuerySchema.omit({ page: true, pageSize: true, search: true })
+route.put(
+  "/update-book",
+  Validator(
+    updateBookSchema,
+    query
+  ),
+  (req, res) => paginatedBook.updateData<"Books">(req, res, { model: "Books" })
+);
+route.delete("/delete-book", QueryValidator(query) ,(req, res) => paginatedBook.deleteData<"Books">(req, res, { model: "Books" }));
 
 // // Users
 // route.get("/users", (req, res) => user.getUsersInfo(req, res, DB));

@@ -14,9 +14,10 @@ export type OrmConnection = {
   password: string;
   port: number;
   host: string;
+  multipleStatements: boolean;
 };
 
-type GenericObject<M extends ModelKey> = {
+export type GenericObject<M extends ModelKey> = {
   [key in keyof Models[M]]: any;
 };
 
@@ -84,7 +85,7 @@ class Orm {
     let query: string[] = [];
 
     const whereClause = Object.entries(data?.where ?? {}).map(
-      ([key, value]) => `${key} = ${mysql.escape(value)}`,
+      ([key, value]) => typeof value === 'number' ? `${key} = ${mysql.escape(value)}` : `${key} LIKE ${mysql.escape(value)}`,
     );
 
     if (data.where) query.push(`WHERE ${whereClause[0]}`);

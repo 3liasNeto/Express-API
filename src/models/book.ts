@@ -46,7 +46,7 @@ class BookData implements BookInfo {
     language: string,
     averageRating: number,
     ratingsCount: number,
-    price: number
+    price: number,
     total: number
   ) {
     this.title = title;

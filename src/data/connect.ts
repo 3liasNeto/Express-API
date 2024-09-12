@@ -11,6 +11,8 @@ const options: OrmConnection = {
   password: process.env.PASSWORD ?? "",
   port: 3306,
   host: process.env.HOST ?? "",
+  multipleStatements: true,
+
 };
 
 const DB = mysql.createConnection(options);

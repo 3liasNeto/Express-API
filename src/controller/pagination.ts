@@ -1,4 +1,4 @@
-type PageSize = 15 | 30 | 50 | 100;
+export type PageSize = 15 | 30 | 50 | 100;
 interface Pagination<PData> {
   items: PData[];
   total: number;
